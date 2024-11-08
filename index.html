@@ -28,19 +28,70 @@
             margin-top: 10px;
             font-size: 1.5em;
         }
+        .leaderboard {
+            margin-top: 20px;
+            font-size: 1.2em;
+        }
+        .leaderboard table {
+            width: 80%;
+            margin: 0 auto;
+            border-collapse: collapse;
+        }
+        .leaderboard th, .leaderboard td {
+            padding: 10px;
+            border: 1px solid #ffffff;
+        }
     </style>
 </head>
 <body>
     <div class="game-container">
         <div class="instructions">Press the arrow keys in a clockwise sequence: Up, Right, Down, Left</div>
         <div class="score">Score: <span id="score">0</span></div>
+        <div class="leaderboard" id="leaderboard">
+            <h3>Top 10 Scores</h3>
+            <table>
+                <thead>
+                    <tr>
+                        <th>Rank</th>
+                        <th>Name</th>
+                        <th>Score</th>
+                    </tr>
+                </thead>
+                <tbody id="leaderboard-table-body">
+                    <!-- Top 10 leaderboard will be inserted here -->
+                </tbody>
+            </table>
+        </div>
     </div>
 
     <script>
         const correctSequence = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
         let currentStep = 0;
         let score = 0;
+        const leaderboard = JSON.parse(localStorage.getItem('leaderboard')) || [];
 
+        // Function to update the leaderboard display
+        function updateLeaderboard() {
+            const leaderboardTableBody = document.getElementById('leaderboard-table-body');
+            leaderboardTableBody.innerHTML = ''; // Clear existing leaderboard
+
+            leaderboard.slice(0, 10).forEach((entry, index) => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td>${index + 1}</td>
+                    <td>${entry.name}</td>
+                    <td>${entry.score}</td>
+                `;
+                leaderboardTableBody.appendChild(row);
+            });
+        }
+
+        // Save the updated leaderboard to localStorage
+        function saveLeaderboard() {
+            localStorage.setItem('leaderboard', JSON.stringify(leaderboard));
+        }
+
+        // Event listener for keydown
         document.addEventListener('keydown', (event) => {
             if (event.key === correctSequence[currentStep]) {
                 currentStep = (currentStep + 1) % correctSequence.length;
@@ -48,11 +99,21 @@
                 document.getElementById('score').textContent = score;
             } else {
                 currentStep = 0; // Reset on wrong key
-                alert('Wrong key! Game over. Final score: ' + score);
+                const playerName = prompt('Game over! Enter your name:');
+                if (playerName) {
+                    leaderboard.push({ name: playerName, score: score });
+                    leaderboard.sort((a, b) => b.score - a.score); // Sort in descending order by score
+                    leaderboard.splice(10); // Keep only the top 10 scores
+                    saveLeaderboard();
+                }
                 score = 0;
                 document.getElementById('score').textContent = score;
+                updateLeaderboard();
             }
         });
+
+        // Initialize leaderboard
+        updateLeaderboard();
     </script>
 </body>
 </html>
