@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Arrow Key Game</title>
+    <style>
+        body {
+            background-color: #1a1a1a;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .game-container {
+            text-align: center;
+        }
+        .instructions {
+            margin-bottom: 20px;
+            font-size: 1.2em;
+        }
+        .score {
+            margin-top: 10px;
+            font-size: 1.5em;
+        }
+    </style>
+</head>
+<body>
+    <div class="game-container">
+        <div class="instructions">Press the arrow keys in a clockwise sequence: Up, Right, Down, Left</div>
+        <div class="score">Score: <span id="score">0</span></div>
+    </div>
+
+    <script>
+        const correctSequence = ['ArrowUp', 'ArrowRight', 'ArrowDown', 'ArrowLeft'];
+        let currentStep = 0;
+        let score = 0;
+
+        document.addEventListener('keydown', (event) => {
+            if (event.key === correctSequence[currentStep]) {
+                currentStep = (currentStep + 1) % correctSequence.length;
+                score++;
+                document.getElementById('score').textContent = score;
+            } else {
+                currentStep = 0; // Reset on wrong key
+                alert('Wrong key! Game over. Final score: ' + score);
+                score = 0;
+                document.getElementById('score').textContent = score;
+            }
+        });
+    </script>
+</body>
+</html>
